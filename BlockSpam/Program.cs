@@ -9,22 +9,17 @@ using Newtonsoft.Json.Linq;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-var config = new ConfigurationBuilder()
-    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .Build();
-
     const int NomoroboSpamScore = 1;
     const string SuccessfulStatus = "successful";
 
-
-
-app.MapPost("/voice", ([FromForm] VoiceRequest request) => 
+app.MapPost("/voice", ([FromForm] string addOns) => 
 {
 
    	var response = new VoiceResponse();
 	var isCallBlocked = false;
-    var addOns = request.CallToken;
+
+
+    //etc, we use this for an audit trail
 
 	if (!string.IsNullOrWhiteSpace(addOns))
        {
@@ -51,6 +46,7 @@ app.MapPost("/voice", ([FromForm] VoiceRequest request) =>
 }).DisableAntiforgery();
 
 
+
 static bool IsBlockedByNomorobo(JToken nomorobo)
         {
             if (nomorobo?["status"]?.Value<string>() != SuccessfulStatus) return false;
@@ -67,5 +63,6 @@ static bool IsBlockedByMarchex(JToken marchex)
             var recommendation = marchex["result"]?["result"]?["recommendation"]?.Value<string>();
             return recommendation == "BLOCK";
         }
+
 
 app.Run();
