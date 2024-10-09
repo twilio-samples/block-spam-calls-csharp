@@ -18,36 +18,38 @@ var config = new ConfigurationBuilder()
     const string SuccessfulStatus = "successful";
 
 
-app.MapPost("/voice", ([FromForm] VoiceRequest request, string addOns) => 
+
+app.MapPost("/voice", ([FromForm] VoiceRequest request) => 
 {
 
    	var response = new VoiceResponse();
 	var isCallBlocked = false;
+    var addOns = request.CallToken;
 
 	if (!string.IsNullOrWhiteSpace(addOns))
-        {
-        Trace.WriteLine(addOns);
+       {
 
         var addOnData = JObject.Parse(addOns);
         if (addOnData["status"]?.ToString() == "successful")
-            	{
-                isCallBlocked = IsBlockedByNomorobo(addOnData["results"]?["nomorobo_spamscore"])
-                            || IsBlockedByMarchex(addOnData["results"]?["marchex_cleancall"]);
-                }
-            }
+            {
+               isCallBlocked = IsBlockedByNomorobo(addOnData["results"]?["nomorobo_spamscore"])
+                           || IsBlockedByMarchex(addOnData["results"]?["marchex_cleancall"]);
+              }
+           }
 
             if (isCallBlocked)
             {
                 response.Reject();
-            }
+           }
             else
-            {
+           {
                 response.Say("Ahoy! You've been determined not spam.");
                 response.Hangup();
-            }
+           }
 
    return Results.Extensions.TwiML(response);
 }).DisableAntiforgery();
+
 
 static bool IsBlockedByNomorobo(JToken nomorobo)
         {

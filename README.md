@@ -7,15 +7,14 @@
 
 ## About
 
-This app shows how to build a call forwarding system with voicemail using C# and Twilio.
+This app shows how to build a system that uses Twilio Marketplace add-ons to block spam calls to your number.
 
 How it works:
 
 - Call is placed to your Twilio number
-- Your app checks the time
-- If the time is within the defined window, it will forward the call to another phone number
-- If it is not in the defined time window, it will record a voicemail
-
+- The call is checked against Marketplace add-ons
+- If the call is declared a spam call by the add-ons, it will not go through and will be blocked.
+- Calls that pass the test of both add-ons and are not spam will go through.
 
 ## Set up
 
